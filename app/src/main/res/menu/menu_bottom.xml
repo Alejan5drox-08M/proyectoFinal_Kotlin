@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tusreservas"
+        android:icon="@drawable/reservadas"
+        android:title="Tus Reservas" />
+    <item
+        android:id="@+id/reservas"
+        android:icon="@drawable/reservar"
+        android:title="Reservas" />
+    <item
+        android:id="@+id/ajustes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/settings"
+        android:title="Ajustes" />
+</menu>
