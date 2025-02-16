@@ -103,7 +103,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return exists
     }
 
-
     fun getReservasByFechaYPista(fecha: String, pista: String): List<String> {
         val reservas = mutableListOf<String>()
         val db = readableDatabase
@@ -145,6 +144,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         cursor.close()
         return reservas
     }
+
     fun modificarReserva(idReserva: Int, nuevaFecha: String, nuevaHora: String) {
         val db = writableDatabase
         val values = ContentValues().apply {
@@ -154,6 +154,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.update("reservas", values, "id = ?", arrayOf(idReserva.toString()))
         db.close()
     }
+
     fun obtenerHorasReservadas(pista: String, fecha: String): List<String> {
         val horasReservadas = mutableListOf<String>()
         val db = readableDatabase
@@ -168,6 +169,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return horasReservadas
     }
+
     fun eliminarReserva(idReserva: Int) {
         val db = writableDatabase
         db.delete(TABLE_RESERVAS, "$COLUMN_RESERVA_ID = ?", arrayOf(idReserva.toString()))

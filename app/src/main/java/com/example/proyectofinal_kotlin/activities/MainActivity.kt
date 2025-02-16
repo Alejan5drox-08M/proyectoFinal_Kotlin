@@ -30,6 +30,7 @@ class MainActivity: AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        //preferencias de la configuracion del tema
         val sharedPreferences: SharedPreferences = getSharedPreferences("config", 0)
         val isDarkMode = sharedPreferences.getBoolean("darkMode", false)
 
@@ -53,11 +54,15 @@ class MainActivity: AppCompatActivity() {
         inicializar_toolbar()
         inicializar_navegacion_inferior()
     }
+
+    //inicializa la navegacion inferior
     private fun inicializar_navegacion_inferior() {
         this.botnav = mibinding.bottomnav
         botnav.setOnItemSelectedListener {
             val email = intent.getStringExtra("email") ?:""
             when(it.itemId) {
+
+                //pantalla de reservas ya realizadas
                 R.id.tusreservas -> {
                     val fragment = ReservadasFragment().apply {
                         arguments = Bundle().apply {
@@ -71,6 +76,7 @@ class MainActivity: AppCompatActivity() {
                     mitoolbar.menu.close()
                 }
 
+                //pantalla para comprar nuevas reservas
                 R.id.reservas -> {
                     val fragment = ReservasFragment().apply {
                         arguments = Bundle().apply {
@@ -84,6 +90,7 @@ class MainActivity: AppCompatActivity() {
                     mitoolbar.menu.close()
                 }
 
+                //pantalla de ajustes para cambiar el tema de la aplicacion y recargar el monedero o cerrar sesion
                 R.id.ajustes -> {
                     val fragment = SettingsFragment().apply {
                         arguments = Bundle().apply {

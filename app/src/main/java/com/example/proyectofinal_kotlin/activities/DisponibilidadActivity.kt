@@ -29,6 +29,7 @@ class DisponibilidadActivity : AppCompatActivity() {
 
         dbHelper = DatabaseHelper(this)
         layoutHorarios = findViewById(R.id.layoutHorarios)
+        // preferencias del tema
         sharedPreferences = getSharedPreferences("config", 0)
 
         selectedDate = intent.getStringExtra("fecha").toString()
@@ -38,11 +39,15 @@ class DisponibilidadActivity : AppCompatActivity() {
         textFecha.text = "Disponibilidad para: $selectedDate\nPista: $selectedPista"
 
         mostrarHorariosDisponibles()
+
+        //toolbar con flecha para volver a la pagina de seleccion de fecha
         inicializar_toolbar()
         setSupportActionBar(findViewById(R.id.toolbarDispo))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
+
+    // Muestra el horario disponible de ese dia
     private fun mostrarHorariosDisponibles() {
         layoutHorarios.removeAllViews()
 

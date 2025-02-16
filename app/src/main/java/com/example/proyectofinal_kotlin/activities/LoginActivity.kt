@@ -27,6 +27,7 @@ class LoginActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        //preferencias de configuracion del tema
         val sharedPreferences: SharedPreferences = getSharedPreferences("config", 0)
         val isDarkMode = sharedPreferences.getBoolean("darkMode", false)
 
@@ -42,6 +43,8 @@ class LoginActivity : AppCompatActivity() {
             dbhelper.insertUser("admin","admin")
             dbhelper.insertUser("aleh","aleh")
         }
+
+        //inicia sesion con el usuario introducido
         buttonLogin.setOnClickListener {
             val email = editTextEmail.text.toString().trim()
             val password = editTextPassword.text.toString().trim()

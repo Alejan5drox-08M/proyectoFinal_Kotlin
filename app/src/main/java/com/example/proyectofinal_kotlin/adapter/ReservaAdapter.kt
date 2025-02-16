@@ -18,6 +18,7 @@ class ReservaAdapter(
     private val email: String
 ) : RecyclerView.Adapter<ReservaAdapter.ReservaViewHolder>() {
 
+    //viewholder de reservas
     class ReservaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textPrecio: TextView = view.findViewById(R.id.textPrecio)
         val textFecha: TextView = view.findViewById(R.id.textFecha)
@@ -49,19 +50,21 @@ class ReservaAdapter(
         holder.textHora.text = "Hora: ${reserva.hora}"
         holder.textMetodoPago.text = "Método de pago: ${reserva.metodoPago}"
 
+        //boton para poder eliminar una reserva y que se reintegre el dinero al monedero
         holder.btnEliminar.setOnClickListener {
             val context = holder.itemView.context
             AlertDialog.Builder(context)
                 .setTitle("Eliminar reserva")
                 .setMessage("¿Estás seguro de que quieres eliminar esta reserva?")
                 .setPositiveButton("Sí") { _, _ ->
-                    eliminarReserva(position, reserva.id) // Llamar al nuevo método corregido
+                    eliminarReserva(position, reserva.id)
                     Toast.makeText(context, "Reserva eliminada y dinero devuelto.", Toast.LENGTH_SHORT).show()
                 }
                 .setNegativeButton("Cancelar", null)
                 .show()
         }
 
+        //boton para poder editar una reserva
         holder.btnEditar.setOnClickListener {
             mostrarDialogoEdicion(holder.itemView.context, reserva, position)
         }
@@ -70,6 +73,7 @@ class ReservaAdapter(
     override fun getItemCount(): Int = reservas.size
 
 
+    //funcion de eliminar la reserva
     private fun eliminarReserva(position: Int, idReserva: Int) {
         val precioReserva = reservas[position].precio
         dbHelper.eliminarReserva(idReserva)
@@ -79,7 +83,7 @@ class ReservaAdapter(
         dbHelper.updateUserSaldo(email, dbHelper.getUserSaldo(email) + precioReserva)
     }
 
-
+    //muestra el dialog para editar la reserva
     private fun mostrarDialogoEdicion(context: Context, reserva: DatabaseHelper.Reserva, position: Int) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_editar_reserva, null)
         val datePickerButton: Button = dialogView.findViewById(R.id.btnSeleccionarFecha)
@@ -127,6 +131,8 @@ class ReservaAdapter(
             .show()
     }
 
+
+    //funcion que modifica las horas disponibles a la hora de mostrar el dialog de edicion
     private fun actualizarHorasDisponibles(context: Context, spinnerHora: Spinner, pista: String, fecha: String) {
         val horasDisponibles = obtenerHorasDisponibles(pista, fecha)
 
@@ -155,13 +161,14 @@ class ReservaAdapter(
         spinnerHora.adapter = adapter
     }
 
+    //funcion que obtiene el rango de horas por defecto que existen
     private fun obtenerHorasDisponibles(pista: String, fecha: String): List<String> {
         val todasLasHoras = listOf("08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00")
         val horasReservadas = dbHelper.obtenerHorasReservadas(pista, fecha)
         return todasLasHoras.filter { it !in horasReservadas }
     }
 
-
+    //modifica la reserva
     private fun modificarReserva(position: Int, idReserva: Int, nuevaFecha: String, nuevaHora: String) {
         dbHelper.modificarReserva(idReserva, nuevaFecha, nuevaHora)
 

@@ -12,6 +12,8 @@ import com.example.proyectofinal_kotlin.R
 import com.example.proyectofinal_kotlin.activities.DisponibilidadActivity
 import com.example.proyectofinal_kotlin.data.DatabaseHelper
 
+
+//fragmento donde se realizan las reservas desde un datepicker y un spinner
 class ReservasFragment : Fragment() {
     private lateinit var spinnerPistas: Spinner
     private lateinit var calendarView: CalendarView
@@ -59,6 +61,7 @@ class ReservasFragment : Fragment() {
         val calendar= Calendar.getInstance()
         calendarView.minDate = calendar.timeInMillis
 
+        //boton para hacer la reserva, navega hasta la pantalla de disponibilidad
         btnVerDisponibilidad.setOnClickListener {
             if (selectedDate.isEmpty()) {
                 Toast.makeText(requireContext(), "Selecciona una fecha primero", Toast.LENGTH_SHORT).show()

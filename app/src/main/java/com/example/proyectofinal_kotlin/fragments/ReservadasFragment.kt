@@ -10,19 +10,21 @@ import com.example.proyectofinal_kotlin.adapter.ReservaAdapter
 import com.example.proyectofinal_kotlin.data.DatabaseHelper
 import com.example.proyectofinal_kotlin.databinding.FragmentReservadasBinding
 
+
+//fragmento que muestra todas las reservas que ha hecho un usuario, si no hay ninguna muestra un mensaje
 class ReservadasFragment : Fragment() {
     private var _binding: FragmentReservadasBinding? = null
     private val binding get() = _binding!!
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var adapter: ReservaAdapter
     private var email: String?=null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         email = arguments?.getString("email")
     }
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentReservadasBinding.inflate(inflater, container, false)
         dbHelper = DatabaseHelper(requireContext())
 
@@ -34,6 +36,7 @@ class ReservadasFragment : Fragment() {
         return binding.root
     }
 
+    //carga las reservas de la base datos
     private fun loadReservas() {
         val reservas = dbHelper.getReservasByUser(email.toString())
         if (reservas.isEmpty()) {

@@ -28,6 +28,8 @@ import com.google.android.gms.wallet.Wallet
 import com.google.android.gms.wallet.WalletConstants
 import org.json.JSONObject
 
+
+//fragmento donde se modifica el tema, se recarga el monedero y se cierra sesion
 class SettingsFragment : Fragment() {
     private lateinit var switchTema: Switch
     private lateinit var btnCerrarSesion: Button
@@ -77,6 +79,7 @@ class SettingsFragment : Fragment() {
     }
 
 
+    //funcion que inicia googlepay
     private fun initGooglePay() {
         val walletOptions = Wallet.WalletOptions.Builder()
             .setEnvironment(WalletConstants.ENVIRONMENT_TEST)
@@ -84,6 +87,8 @@ class SettingsFragment : Fragment() {
         paymentsClient = Wallet.getPaymentsClient(requireActivity(), walletOptions)
     }
 
+
+    //funcion para cambiar el tema de la aplicacion
     private fun setAppTheme(isDark: Boolean) {
         AppCompatDelegate.setDefaultNightMode(
             if (isDark) AppCompatDelegate.MODE_NIGHT_YES
@@ -91,19 +96,25 @@ class SettingsFragment : Fragment() {
         )
     }
 
+    //funcion que cierra la sesion del usuario y navega hasta el login
     private fun cerrarSesion() {
         val intent = Intent(requireActivity(), LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
     }
 
+    //funcion para refrescar el monedero
     private fun actualizarSaldoTexto(saldo: Float) {
         textSaldo.text = "Saldo: €${"%.2f".format(saldo)}"
     }
+
+    //funcion que carga los datos del json necesario para googlepay
     fun loadJsonFromRawResource(resourceId: Int): String {
         val inputStream = resources.openRawResource(resourceId)
         return inputStream.bufferedReader().use { it.readText() }
     }
+
+    //funcion que conduce a googlepay para poder ingresar una cantidad al monedero
     private fun pagarConGooglePay(monto: Float) {
         val paymentJson = JSONObject(loadJsonFromRawResource(R.raw.payments))
 
@@ -139,6 +150,8 @@ class SettingsFragment : Fragment() {
         }
     }
 
+
+    //dialog que aparece al recargar con googlepay
     private fun pedirMontoPersonalizado() {
         val input = EditText(requireContext())
         input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -159,6 +172,8 @@ class SettingsFragment : Fragment() {
             .show()
     }
 
+
+    //muestra las opciones que hay al recargar el monedero
     private fun mostrarOpcionesRecarga() {
         val opciones = arrayOf("5€", "10€", "20€", "50€", "Google Pay (Otro monto)")
         val cantidades = floatArrayOf(5.0f, 10.0f, 20.0f, 50.0f, -1.0f)
@@ -177,7 +192,7 @@ class SettingsFragment : Fragment() {
     }
 
 
-
+    //actualiza el saldo una vez recargado
     private fun recargarSaldo(cantidad: Float) {
         val saldoActual = dbHelper.getUserSaldo(email.toString())
         val nuevoSaldo = saldoActual + cantidad
@@ -186,6 +201,8 @@ class SettingsFragment : Fragment() {
         Toast.makeText(requireContext(), "Saldo recargado: €$cantidad", Toast.LENGTH_SHORT).show()
     }
 
+
+    //reduce la cantidad de saldo que tiene un usuario al hacer una reserva
     fun descontarSaldo(cantidad: Float): Boolean {
         val saldoActual = dbHelper.getUserSaldo(email.toString())
         return if (saldoActual >= cantidad) {
