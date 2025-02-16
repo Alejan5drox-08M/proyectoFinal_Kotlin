@@ -14,7 +14,7 @@
 
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#38EAED"
+        android:background="#03A9F4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

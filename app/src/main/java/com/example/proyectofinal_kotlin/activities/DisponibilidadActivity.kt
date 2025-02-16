@@ -2,16 +2,19 @@ package com.example.proyectofinal_kotlin.activities
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.example.proyectofinal_kotlin.R
 import com.example.proyectofinal_kotlin.data.DatabaseHelper
 import com.example.proyectofinal_kotlin.fragments.SettingsFragment
 
 class DisponibilidadActivity : AppCompatActivity() {
+    lateinit var mitoolbar: Toolbar
     private lateinit var dbHelper: DatabaseHelper
     private lateinit var layoutHorarios: LinearLayout
     private lateinit var sharedPreferences: SharedPreferences
@@ -34,6 +37,11 @@ class DisponibilidadActivity : AppCompatActivity() {
         textFecha.text = "Disponibilidad para: $selectedDate\nPista: $selectedPista"
 
         mostrarHorariosDisponibles()
+
+        inicializar_toolbar()
+        setSupportActionBar(findViewById(R.id.toolbarDispo))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
     }
 
     private fun mostrarHorariosDisponibles() {
@@ -81,5 +89,19 @@ class DisponibilidadActivity : AppCompatActivity() {
             }
             layoutHorarios.addView(btnHora)
         }
+    }
+
+    private fun inicializar_toolbar() {
+        this.mitoolbar=findViewById(R.id.toolbarDispo)
+        this.mitoolbar.setTitle("Sportify Reserve")
+        this.mitoolbar.setLogo(R.drawable.logo)
+        setSupportActionBar(this.mitoolbar)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            finish()
+        }
+        return true
     }
 }
