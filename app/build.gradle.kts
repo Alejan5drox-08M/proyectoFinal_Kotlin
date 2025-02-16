@@ -48,6 +48,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.fragment:fragment-ktx:1.8.5")
+    implementation ("com.google.android.gms:play-services-wallet:19.2.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

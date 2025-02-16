@@ -3,18 +3,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp"
+    android:gravity="center">
 
+    <!-- Switch para cambiar el tema -->
     <Switch
         android:id="@+id/switchTema"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Modo oscuro" />
+        android:text="Modo Oscuro"
+        android:textSize="18sp"
+        android:padding="10dp" />
 
+    <!-- Texto para mostrar el saldo del usuario -->
+    <TextView
+        android:id="@+id/textSaldo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Saldo: €50.00"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="15dp"
+        android:gravity="center" />
+    <Button
+        android:id="@+id/btnGooglePay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pagar con Google Pay" />
+
+    <!-- Botón para cerrar sesión -->
     <Button
         android:id="@+id/btnCerrarSesion"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cerrar sesión"
+        android:text="Cerrar Sesión"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
         android:layout_marginTop="20dp"/>
+
+    <!-- (Opcional) Botón para recargar saldo -->
+    <Button
+        android:id="@+id/btnRecargarSaldo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Recargar Saldo"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:layout_marginTop="10dp"
+        android:visibility="gone"/> <!-- Oculto hasta que lo implementes -->
+
 </LinearLayout>

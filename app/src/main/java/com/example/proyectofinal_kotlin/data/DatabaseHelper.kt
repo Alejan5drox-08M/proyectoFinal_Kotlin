@@ -144,7 +144,6 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return horasReservadas
     }
-
     fun getAllReservas(): List<Reserva> {
         val reservas = mutableListOf<Reserva>()
         val db = readableDatabase
