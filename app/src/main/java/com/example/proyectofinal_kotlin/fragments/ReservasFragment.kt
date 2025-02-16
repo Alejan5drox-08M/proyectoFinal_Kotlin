@@ -1,6 +1,7 @@
 package com.example.proyectofinal_kotlin.fragments
 
 import android.content.Intent
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -35,30 +36,29 @@ class ReservasFragment : Fragment() {
         btnVerDisponibilidad = view.findViewById(R.id.btnVerDisponibilidad)
         dbHelper = DatabaseHelper(requireContext())
 
-        // Opciones del Spinner
+
         val opcionesPistas = arrayOf("Pádel", "Fútbol Sala", "Baloncesto", "Tenis")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, opcionesPistas)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerPistas.adapter = adapter
 
-        // Capturar selección del Spinner
         spinnerPistas.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 selectedPista = opcionesPistas[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                selectedPista = opcionesPistas[0] // Valor por defecto
+                selectedPista = opcionesPistas[0]
             }
         }
 
-        // Manejar selección de fecha en el CalendarView
         calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
             selectedDate = "$year-${month + 1}-$dayOfMonth"
             textSelectedDate.text = "Fecha seleccionada: $selectedDate"
         }
+        val calendar= Calendar.getInstance()
+        calendarView.minDate = calendar.timeInMillis
 
-        // Botón para ver disponibilidad
         btnVerDisponibilidad.setOnClickListener {
             if (selectedDate.isEmpty()) {
                 Toast.makeText(requireContext(), "Selecciona una fecha primero", Toast.LENGTH_SHORT).show()

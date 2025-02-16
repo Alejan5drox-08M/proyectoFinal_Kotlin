@@ -8,13 +8,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
 
     companion object {
         private const val DATABASE_NAME = "reservas.db"
-        private const val DATABASE_VERSION = 5
+        private const val DATABASE_VERSION = 10
 
         private const val TABLE_USERS = "usuarios"
         private const val COLUMN_USER_ID = "id"
         private const val COLUMN_USER_EMAIL = "email"
         private const val COLUMN_USER_PASSWORD = "password"
-
+        private const val COLUMN_USER_SALDO = "saldo"
 
         private const val TABLE_RESERVAS = "reservas"
         private const val COLUMN_RESERVA_ID = "id"
@@ -31,7 +31,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
             CREATE TABLE $TABLE_USERS (
                 $COLUMN_USER_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COLUMN_USER_EMAIL TEXT UNIQUE NOT NULL,
-                $COLUMN_USER_PASSWORD TEXT NOT NULL
+                $COLUMN_USER_PASSWORD TEXT NOT NULL,
+                $COLUMN_USER_SALDO REAL DEFAULT 50.0
             )
         """.trimIndent()
 
@@ -58,6 +59,29 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         onCreate(db)
     }
 
+
+    fun updateUserSaldo(email: String, nuevoSaldo: Float) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COLUMN_USER_SALDO, nuevoSaldo)
+        }
+        db.update(TABLE_USERS, values, "$COLUMN_USER_EMAIL = ?", arrayOf(email))
+        db.close()
+    }
+
+    fun getUserSaldo(email: String): Float {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT $COLUMN_USER_SALDO FROM $TABLE_USERS WHERE $COLUMN_USER_EMAIL = ?", arrayOf(email))
+
+        val saldo = if (cursor.moveToFirst()) {
+            cursor.getFloat(cursor.getColumnIndexOrThrow(COLUMN_USER_SALDO))
+        } else {
+            0.0
+        }
+
+        cursor.close()
+        return saldo as Float
+    }
 
     fun insertUser(email: String, password: String): Long {
         val db = writableDatabase
@@ -111,7 +135,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         while (cursor.moveToNext()) {
             val id = cursor.getInt(0)
             val pista = cursor.getString(1)
-            val precio = cursor.getDouble(2)
+            val precio = cursor.getFloat(2)
             val fecha = cursor.getString(3)
             val hora = cursor.getString(4)
             val metodoPago = cursor.getString(5)
@@ -144,34 +168,16 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.close()
         return horasReservadas
     }
-    fun getAllReservas(): List<Reserva> {
-        val reservas = mutableListOf<Reserva>()
-        val db = readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM reservas", null)
-
-        while (cursor.moveToNext()) {
-            val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-            val pista = cursor.getString(cursor.getColumnIndexOrThrow("pista"))
-            val precio = cursor.getDouble(cursor.getColumnIndexOrThrow("precio"))
-            val fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha"))
-            val hora = cursor.getString(cursor.getColumnIndexOrThrow("hora"))
-            val metodoPago = cursor.getString(cursor.getColumnIndexOrThrow("metodo_pago"))
-
-            reservas.add(Reserva(id, pista, precio, fecha, hora, metodoPago))
-        }
-        cursor.close()
-        return reservas
-    }
     fun eliminarReserva(idReserva: Int) {
-        val db = this.writableDatabase
-        db.delete("reservas", "id=?", arrayOf(idReserva.toString()))
+        val db = writableDatabase
+        db.delete(TABLE_RESERVAS, "$COLUMN_RESERVA_ID = ?", arrayOf(idReserva.toString()))
         db.close()
     }
 
     data class Reserva(
         val id: Int,
         val pista: String,
-        val precio: Double,
+        val precio: Float,
         val fecha: String,
         val hora: String,
         val metodoPago: String

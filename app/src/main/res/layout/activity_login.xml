@@ -17,27 +17,28 @@
 
     <EditText
         android:id="@+id/editTextEmail"
-        android:layout_width="match_parent"
+        android:layout_width="370dp"
         android:layout_height="wrap_content"
+        android:drawableStart="@android:drawable/ic_menu_send"
         android:hint="Correo electrónico"
         android:inputType="textEmailAddress"
-        android:drawableStart="@android:drawable/ic_menu_send"
-        android:padding="10dp"/>
+        android:padding="10dp" />
 
     <EditText
         android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
+        android:layout_width="370dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:drawableStart="@android:drawable/ic_lock_lock"
         android:hint="Contraseña"
         android:inputType="textPassword"
-        android:drawableStart="@android:drawable/ic_lock_lock"
-        android:padding="10dp"
-        android:layout_marginTop="10dp"/>
+        android:padding="10dp" />
 
     <Button
         android:id="@+id/buttonLogin"
-        android:layout_width="match_parent"
+        android:layout_width="201dp"
         android:layout_height="wrap_content"
-        android:text="Iniciar Sesión"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#26872A"
+        android:text="Iniciar Sesión" />
 </LinearLayout>

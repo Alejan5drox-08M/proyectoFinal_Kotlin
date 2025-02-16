@@ -33,7 +33,7 @@ class MainActivity: AppCompatActivity() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("config", 0)
         val isDarkMode = sharedPreferences.getBoolean("darkMode", false)
 
-        // Aplicar el tema guardado
+
         if (isDarkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {
@@ -85,9 +85,14 @@ class MainActivity: AppCompatActivity() {
                 }
 
                 R.id.ajustes -> {
-                    supportFragmentManager.commit {
-                        replace(R.id.fragment_container_view, SettingsFragment())
+                    val fragment = SettingsFragment().apply {
+                        arguments = Bundle().apply {
+                            putString("email", email)
+                        }
                     }
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container_view, fragment)
+                        .commit()
                     mitoolbar.menu.clear()
                     mitoolbar.menu.close()
                 }

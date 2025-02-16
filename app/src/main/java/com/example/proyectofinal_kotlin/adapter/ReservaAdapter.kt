@@ -14,7 +14,8 @@ import java.util.*
 
 class ReservaAdapter(
     private val reservas: MutableList<DatabaseHelper.Reserva>,
-    private val dbHelper: DatabaseHelper
+    private val dbHelper: DatabaseHelper,
+    private val email: String
 ) : RecyclerView.Adapter<ReservaAdapter.ReservaViewHolder>() {
 
     class ReservaViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -48,18 +49,19 @@ class ReservaAdapter(
         holder.textHora.text = "Hora: ${reserva.hora}"
         holder.textMetodoPago.text = "Método de pago: ${reserva.metodoPago}"
 
-        // 🔴 Botón para eliminar la reserva con confirmación
         holder.btnEliminar.setOnClickListener {
             val context = holder.itemView.context
             AlertDialog.Builder(context)
                 .setTitle("Eliminar reserva")
                 .setMessage("¿Estás seguro de que quieres eliminar esta reserva?")
-                .setPositiveButton("Sí") { _, _ -> eliminarReserva(position, reserva.id) }
+                .setPositiveButton("Sí") { _, _ ->
+                    eliminarReserva(position, reserva.id) // Llamar al nuevo método corregido
+                    Toast.makeText(context, "Reserva eliminada y dinero devuelto.", Toast.LENGTH_SHORT).show()
+                }
                 .setNegativeButton("Cancelar", null)
                 .show()
         }
 
-        // 🟡 Botón para modificar fecha y hora
         holder.btnEditar.setOnClickListener {
             mostrarDialogoEdicion(holder.itemView.context, reserva, position)
         }
@@ -67,26 +69,27 @@ class ReservaAdapter(
 
     override fun getItemCount(): Int = reservas.size
 
-    // 🗑 Método para eliminar la reserva
+
     private fun eliminarReserva(position: Int, idReserva: Int) {
+        val precioReserva = reservas[position].precio
         dbHelper.eliminarReserva(idReserva)
         reservas.removeAt(position)
         notifyItemRemoved(position)
+        notifyDataSetChanged()
+        dbHelper.updateUserSaldo(email, dbHelper.getUserSaldo(email) + precioReserva)
     }
 
-    // ✏ Método para mostrar el diálogo de edición
+
     private fun mostrarDialogoEdicion(context: Context, reserva: DatabaseHelper.Reserva, position: Int) {
         val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_editar_reserva, null)
         val datePickerButton: Button = dialogView.findViewById(R.id.btnSeleccionarFecha)
         val spinnerHora: Spinner = dialogView.findViewById(R.id.spinnerHora)
 
         val fechaSeleccionada = Calendar.getInstance()
-        datePickerButton.text = reserva.fecha // Fecha actual de la reserva
+        datePickerButton.text = reserva.fecha
 
-        // 🔹 Cargar horas disponibles para la fecha inicial
         actualizarHorasDisponibles(context, spinnerHora, reserva.pista, reserva.fecha)
 
-        // 🎯 Selección de fecha
         datePickerButton.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 context,
@@ -94,46 +97,64 @@ class ReservaAdapter(
                     val nuevaFecha = "$year-${month + 1}-$dayOfMonth"
                     datePickerButton.text = nuevaFecha
 
-                    // 🔄 Actualizar horarios disponibles al cambiar la fecha
                     actualizarHorasDisponibles(context, spinnerHora, reserva.pista, nuevaFecha)
                 },
                 fechaSeleccionada.get(Calendar.YEAR),
                 fechaSeleccionada.get(Calendar.MONTH),
                 fechaSeleccionada.get(Calendar.DAY_OF_MONTH)
             )
+            val calendar = Calendar.getInstance()
+            datePickerDialog.datePicker.minDate = calendar.timeInMillis
             datePickerDialog.show()
         }
 
-        // 🛠 Construcción del diálogo
         AlertDialog.Builder(context)
             .setTitle("Modificar Reserva")
             .setView(dialogView)
             .setPositiveButton("Guardar") { _, _ ->
                 val nuevaFecha = datePickerButton.text.toString()
-                val nuevaHora = spinnerHora.selectedItem?.toString() ?: return@setPositiveButton
+                val nuevaHora = spinnerHora.selectedItem?.toString()
+
+                if (nuevaHora == null) {
+                    Toast.makeText(context, "Por favor, selecciona una hora.", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
+
                 modificarReserva(position, reserva.id, nuevaFecha, nuevaHora)
             }
+
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    /**
-     * 🔹 Filtra las horas disponibles para una pista y fecha en específico.
-     */
     private fun actualizarHorasDisponibles(context: Context, spinnerHora: Spinner, pista: String, fecha: String) {
         val horasDisponibles = obtenerHorasDisponibles(pista, fecha)
 
-        if (horasDisponibles.isEmpty()) {
+        val calendar = Calendar.getInstance()
+        val currentDate = "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_MONTH)}"
+
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = calendar.get(Calendar.MINUTE)
+
+        val horasFiltradas = if (fecha == currentDate) {
+            horasDisponibles.filter {
+                val horaParts = it.split(":")
+                val hour = horaParts[0].toInt()
+                val minute = horaParts[1].toInt()
+                hour > currentHour || (hour == currentHour && minute > currentMinute)
+            }
+        } else {
+            horasDisponibles
+        }
+
+        if (horasFiltradas.isEmpty()) {
             Toast.makeText(context, "No hay horarios disponibles para esta fecha", Toast.LENGTH_SHORT).show()
         }
 
-        val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, horasDisponibles)
+        val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, horasFiltradas)
         spinnerHora.adapter = adapter
     }
 
-    /**
-     * 🔍 Obtiene las horas disponibles consultando la base de datos.
-     */
     private fun obtenerHorasDisponibles(pista: String, fecha: String): List<String> {
         val todasLasHoras = listOf("08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00")
         val horasReservadas = dbHelper.obtenerHorasReservadas(pista, fecha)
@@ -141,7 +162,6 @@ class ReservaAdapter(
     }
 
 
-    // 🔄 Método para modificar la reserva
     private fun modificarReserva(position: Int, idReserva: Int, nuevaFecha: String, nuevaHora: String) {
         dbHelper.modificarReserva(idReserva, nuevaFecha, nuevaHora)
 

@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.example.proyectofinal_kotlin.R
 import com.example.proyectofinal_kotlin.activities.LoginActivity
+import com.example.proyectofinal_kotlin.data.DatabaseHelper
 import com.google.android.gms.wallet.AutoResolveHelper
 import com.google.android.gms.wallet.PaymentData
 import com.google.android.gms.wallet.PaymentDataRequest
@@ -34,20 +35,26 @@ class SettingsFragment : Fragment() {
     private lateinit var textSaldo: TextView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var paymentsClient: PaymentsClient
+    private lateinit var dbHelper: DatabaseHelper
+    private var email: String?=null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        email = arguments?.getString("email")
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
         initGooglePay()
-
+        dbHelper = DatabaseHelper(requireContext())
         switchTema = view.findViewById(R.id.switchTema)
         btnCerrarSesion = view.findViewById(R.id.btnCerrarSesion)
         btnGooglePay = view.findViewById(R.id.btnGooglePay)
         textSaldo = view.findViewById(R.id.textSaldo)
         sharedPreferences = requireActivity().getSharedPreferences("config", 0)
 
-        val saldoActual = sharedPreferences.getFloat("saldo", 50.0f)
+        val saldoActual = dbHelper.getUserSaldo(email.toString())
         actualizarSaldoTexto(saldoActual)
 
         val isDarkMode = sharedPreferences.getBoolean("darkMode", false)
@@ -113,7 +120,7 @@ class SettingsFragment : Fragment() {
         AutoResolveHelper.resolveTask(
             paymentsClient.loadPaymentData(paymentDataRequest),
             requireActivity(),
-            999 // Request code
+            999
         )
     }
 
@@ -131,7 +138,6 @@ class SettingsFragment : Fragment() {
             }
         }
     }
-
 
     private fun pedirMontoPersonalizado() {
         val input = EditText(requireContext())
@@ -173,18 +179,18 @@ class SettingsFragment : Fragment() {
 
 
     private fun recargarSaldo(cantidad: Float) {
-        val saldoActual = sharedPreferences.getFloat("saldo", 50.0f)
+        val saldoActual = dbHelper.getUserSaldo(email.toString())
         val nuevoSaldo = saldoActual + cantidad
-        sharedPreferences.edit().putFloat("saldo", nuevoSaldo).apply()
+        dbHelper.updateUserSaldo(email.toString(), nuevoSaldo)
         actualizarSaldoTexto(nuevoSaldo)
         Toast.makeText(requireContext(), "Saldo recargado: €$cantidad", Toast.LENGTH_SHORT).show()
     }
 
     fun descontarSaldo(cantidad: Float): Boolean {
-        val saldoActual = sharedPreferences.getFloat("saldo", 50.0f)
+        val saldoActual = dbHelper.getUserSaldo(email.toString())
         return if (saldoActual >= cantidad) {
             val nuevoSaldo = saldoActual - cantidad
-            sharedPreferences.edit().putFloat("saldo", nuevoSaldo).apply()
+            dbHelper.updateUserSaldo(email.toString(), nuevoSaldo)
             actualizarSaldoTexto(nuevoSaldo)
             true
         } else {

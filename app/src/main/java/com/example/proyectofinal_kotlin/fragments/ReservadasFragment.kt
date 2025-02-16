@@ -35,14 +35,14 @@ class ReservadasFragment : Fragment() {
     }
 
     private fun loadReservas() {
-        val reservas = dbHelper.getReservasByUser(email.toString()) // Obtener reservas de SQLite
+        val reservas = dbHelper.getReservasByUser(email.toString())
         if (reservas.isEmpty()) {
             binding.recyclerViewReservas.visibility = View.GONE
             binding.textViewNoReservas.visibility = View.VISIBLE
         } else {
             binding.recyclerViewReservas.visibility = View.VISIBLE
             binding.textViewNoReservas.visibility = View.GONE
-            adapter = ReservaAdapter(reservas,dbHelper)
+            adapter = ReservaAdapter(reservas,dbHelper,email.toString())
             binding.recyclerViewReservas.adapter = adapter
         }
     }

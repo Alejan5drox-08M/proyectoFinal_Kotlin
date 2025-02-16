@@ -30,7 +30,6 @@ class LoginActivity : AppCompatActivity() {
         val sharedPreferences: SharedPreferences = getSharedPreferences("config", 0)
         val isDarkMode = sharedPreferences.getBoolean("darkMode", false)
 
-        // Aplicar el tema guardado
         if (isDarkMode) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         } else {

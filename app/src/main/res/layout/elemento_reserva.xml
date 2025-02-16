@@ -14,11 +14,6 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
-        <!-- Botón de eliminar en la esquina superior derecha -->
-
-        <!-- Imagen de la reserva -->
-
-        <!-- Información de la reserva -->
         <ImageView
             android:id="@+id/imageTipoReserva"
             android:layout_width="100dp"
